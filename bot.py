@@ -26,6 +26,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
 
+    # COMMAND: !addVote
     if message.content == "!addVote":
         # get history
         messages = await message.channel.history(limit=3).flatten()
@@ -36,6 +37,12 @@ async def on_message(message):
 
         # delete command
         await message.delete()
+
+    # PASSIVE: auto-react meme-off/hot-takes
+    if (message.channel.name == "meme-off") or (message.channel.name == "hot-takes"):
+        # add reactions
+        await message.add_reaction("updoot:692862052599070720")
+        await message.add_reaction("downdoot:692862024241250334")
 
 
 client.run(TOKEN)
