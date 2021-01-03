@@ -1,0 +1,3 @@
+# .env
+TOKEN=<your bot token>
+GUILD="<current server name>"
