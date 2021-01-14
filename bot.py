@@ -111,6 +111,7 @@ async def add_vote(ctx, amount=1):
 
 
 @client.command()
+@commands.has_role("role doesn't exist")
 async def clear(ctx, amount):
     await ctx.channel.purge(limit=amount)
 
