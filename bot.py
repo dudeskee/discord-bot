@@ -81,7 +81,6 @@ async def ban(ctx, member : discord.Member, *, reason=None):
     await ctx.channel.purge(limit=1)
     await ctx.send(f'{member} was banned for {reason}!')
 
-
 # unban command - must have punisher role
 @client.command()
 @commands.has_role("punisher")
@@ -97,6 +96,19 @@ async def unban(ctx, *, member):
             await ctx.guild.unban(user)
             await ctx.send(f'Unbanned {user.mention}')
             return
+
+# ban taylor command - Anyone can use it
+@client.command()
+async def fuckTaylor(ctx, member = discord.Member):
+    if(member.id != 396826774887071744):
+        "Target is not taylor. Please ban taylor stykes."
+        return
+
+    reason = "You have been fucked on Taylor"
+    await member.ban(reason)
+    # delete command
+    await ctx.channel.purge(limit=1)
+    await ctx.send(f'{member} was banned for {reason}!')
 
 
 @client.command(aliases=['addvote', 'vote', 'doots', 'doot'])
