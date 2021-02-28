@@ -5,8 +5,9 @@ This bot's purpose is to automate any inconveniences our Memeplex server has com
 ### Passive
 - automatically updoots and downdoots messages in #meme-off and #hot-takes.
 ### Commands
-- `!addVote`: bot adds updoot and downdoot emote to message previous to command
-- `!addBigVote#`: bot adds emotes 1-# to message previous to command
+- `!doot`: bot adds updoot and downdoot emote to last sent message in channel
+- `!bigvote (1-0)`: bot adds blue numbered emotes to last sent message in channel (0 results in 10 total emotes)
+- `!ping`: bot reports the latency of the bot client to the discord server in milliseconds
 
 ## Maintenance
 Update server name in .env
