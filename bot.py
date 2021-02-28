@@ -60,7 +60,7 @@ async def ping(ctx):
         await ctx.channel.purge(limit=1)
         await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
     else:
-        await ctx.send('nope')
+        await ctx.send(f'nope')
 
 
 # kick command - must have punisher role
