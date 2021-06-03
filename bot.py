@@ -1,5 +1,6 @@
 import discord
 import os
+import sqlite3
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -7,9 +8,10 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 
+
 client = commands.Bot(command_prefix='!')
 
-
+# Discord.py docs can be found here https://discordpy.readthedocs.io/
 @client.event
 async def on_ready():
     for guild in client.guilds:
@@ -22,8 +24,88 @@ async def on_ready():
     )
     await client.change_presence(activity=discord.Game('gumpin\' bubbies'))
 
+#strike db info
+conn = sqlite3.connect('strikers.db')
+cur = conn.cursor()
+command1 = """CREATE TABLE IF NOT EXISTS
+strikers (name TEXT, strikes INTEGER)"""
+cur.execute(command1)
+conn.commit()
+
+# addstrike command
+@client.command()
+@commands.has_role("striker")
+async def addstrike(ctx, person):
+    with conn:
+        cur.execute("SELECT name FROM strikers")
+        name_tuple = cur.fetchall()
+        names = list(name_tuple)
+        good_names = " ".join(map(str, names)).replace(')', '').replace('(', '').replace(',', '').replace("'", '')
+        if person.lower() in good_names:
+            get_old_strikes = f"SELECT strikes " \
+                              f"FROM strikers " \
+                              f"WHERE name ='{person.lower()}'"
+            cur.execute(get_old_strikes)
+            old_strikes = cur.fetchone()
+            list_strikes = list(old_strikes)
+            int_strikes = " ".join(map(str, list_strikes)).replace(')', '').replace('(', '').replace(',', '').replace("'", '')
+            new_strikes = int(int_strikes) + 1
+            cur.execute(f"UPDATE strikers "
+                        f"SET strikes='{new_strikes}'"
+                        f"WHERE name='{person.lower()}'")
+            await ctx.send(f'{person.title()} now has {new_strikes} strikes!')
+        else:
+            cur.execute(f"INSERT INTO strikers(name, strikes) "
+                        f"VALUES ('{person.lower()}', 1)")
+            await ctx.send(f'{person.title()} now has 1 strike!')
+#removes strike from person
+@client.command(alises=['rmstrike'])
+@commands.has_role("striker")
+async def rm_strike(ctx, person):
+    with conn:
+        cur.execute("SELECT name FROM strikers")
+        name_tuple = cur.fetchall()
+        names = list(name_tuple)
+        good_names = " ".join(map(str, names)).replace(')', '').replace('(', '').replace(',', '').replace("'", '')
+        cur.execute(f"SELECT strikes FROM strikers WHERE name='{person.lower()}'")
+        strike_tuple = cur.fetchone()
+        strike_count = " ".join(map(str, strike_tuple)).replace(')', '').replace('(', '').replace(',', '').replace("'", '')
+        if person.lower() in good_names and strike_count != '0':
+            get_old_strikes = f"SELECT strikes " \
+                              f"FROM strikers " \
+                              f"WHERE name ='{person.lower()}'"
+            cur.execute(get_old_strikes)
+            old_strikes = cur.fetchone()
+            list_strikes = list(old_strikes)
+            int_strikes = " ".join(map(str, list_strikes)).replace(')', '').replace('(', '').replace(',', '').replace("'", '')
+            new_strikes = int(int_strikes) - 1
+            cur.execute(f"UPDATE strikers "
+                        f"SET strikes='{new_strikes}'"
+                        f"WHERE name='{person.lower()}'")
+            await ctx.send(f'{person.title()} now has {new_strikes} strikes!')
+        else:
+            await ctx.send(f'{person.title()} does not have any strikes to be removed!')
+
+# list strikes of person
+@client.command()
+async def strikes(ctx, person):
+    with conn:
+        cur.execute("SELECT name FROM strikers")
+        name_tuple = cur.fetchall()
+        names = list(name_tuple)
+        good_names = " ".join(map(str, names)).replace(')', '').replace('(', '').replace(',', '').replace("'", '')
+        if person.lower() in good_names:
+            cur.execute(f"SELECT strikes FROM strikers WHERE name='{person.lower()}'")
+            strike_tuple = cur.fetchone()
+            strike_count = " ".join(map(str, strike_tuple)).replace(')', '').replace('(', '').replace(',', '').replace(
+                "'", '')
+            await ctx.send(f"{person.title()} has {strike_count} strikes!")
+        else:
+            await ctx.send(f"{person.title()} has 0 strikes!")
 
 
+
+#announce when member joins
 @client.event
 async def on_member_join(member):
     print(f'{member} has joined the server.')
@@ -33,34 +115,15 @@ async def on_member_join(member):
 async def on_member_remove(member):
     print(f'{member} has left the server.')
 
-
-# load cogs
-@client.command()
-async def load(ctx, extension):
-    client.load_extension(f'cogs.{extension}')
-
-
-# unload cogs
-@client.command()
-async def unload(ctx, extension):
-    client.unload_extension(f'cogs.{extension}')
-
-
-# For future use with cogs - remove # when cogs configured
-#for filename in os.listdir('./cogs'):
-#    if filename.endswith('.py'):
-#        client.load_extension(f'cogs.{filename[:-3]}')
-
-
 # ping command - reports bot latency
 @client.command()
 @commands.cooldown(1, 30, commands.BucketType.guild)
 async def ping(ctx):
     if commands.errors.CommandOnCooldown:
         await ctx.channel.purge(limit=1)
-        await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
+        await ctx.send(f'Pong! Bot latency is currently {round(client.latency * 1000)}ms')
     else:
-        await ctx.send(f'nope')
+        await ctx.send('nope')
 
 
 # kick command - must have punisher role
