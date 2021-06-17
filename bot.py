@@ -33,11 +33,12 @@ for filename in os.listdir('./cogs'):
 @client.event
 async def passive_votes(ctx):
     # PASSIVE: auto-react meme-off/hot-takes
-    if (ctx.channel.name == "meme-off") or (ctx.channel.name == "hot-takes") \
-            and (ctx.author.id != 785635869771563018):
+    if (ctx.channel.name == "meme-off") or (ctx.channel.name == "hot-takes"):
         # add reactions
-        await ctx.add_reaction("updoot")
-        await ctx.add_reaction("downdoot")
+        updoot = get(ctx.get_all_emojis(), name='updoot')
+        downdoot = get(ctx.get_all_emojis(), name='downdoot')
+        await ctx.add_reaction(updoot)
+        await ctx.add_reaction(downdoot)
         
 
 # announce when member joins
