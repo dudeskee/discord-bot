@@ -36,8 +36,8 @@ async def passive_votes(ctx):
     if (ctx.channel.name == "meme-off") or (ctx.channel.name == "hot-takes") \
             and (ctx.author.id != 785635869771563018):
         # add reactions
-        await ctx.add_reaction("updoot:692862052599070720")
-        await ctx.add_reaction("downdoot:692862024241250334")
+        await ctx.add_reaction("updoot")
+        await ctx.add_reaction("downdoot")
         
 
 # announce when member joins
