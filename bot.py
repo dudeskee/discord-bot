@@ -29,6 +29,16 @@ for filename in os.listdir('./cogs'):
         client.load_extension(f'cogs.{filename[:-3]}')
         print(f'Loaded {filename[:-3]}')
 
+        
+@client.event
+async def passive_votes(ctx):
+    # PASSIVE: auto-react meme-off/hot-takes
+    if (ctx.channel.name == "meme-off") or (ctx.channel.name == "hot-takes") \
+            and (ctx.author.id != 785635869771563018):
+        # add reactions
+        await ctx.add_reaction("updoot:692862052599070720")
+        await ctx.add_reaction("downdoot:692862024241250334")
+        
 
 # announce when member joins
 @client.event
@@ -64,16 +74,6 @@ async def reload(ctx, extension):
 @commands.has_role("role doesn't exist")
 async def clear(ctx, amount):
     await ctx.channel.purge(limit=amount)
-
-
-@client.event
-async def passive_votes(ctx):
-    # PASSIVE: auto-react meme-off/hot-takes
-    if (ctx.channel.name == "meme-off") or (ctx.channel.name == "hot-takes") \
-            and (ctx.author.id != 785635869771563018):
-        # add reactions
-        await ctx.add_reaction("updoot:692862052599070720")
-        await ctx.add_reaction("downdoot:692862024241250334")
 
 
 client.run(TOKEN)
