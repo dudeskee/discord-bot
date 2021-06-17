@@ -31,11 +31,10 @@ for filename in os.listdir('./cogs'):
         print(f'Loaded {filename[:-3]}')
 
         
-@client.event
-async def on_message(ctx):
+@client.listen('on_message')
+async def passive_votes(ctx):
     # PASSIVE: auto-react meme-off/hot-takes
-    if ctx.channel.name == "meme-off" or "hot-takes":
-        # add reactions
+    if (ctx.channel.name == "meme-off") or (ctx.channel.name == "hot-takes"):
         await ctx.add_reaction("updoot:692862052599070720")
         await ctx.add_reaction("downdoot:692862024241250334")
         
